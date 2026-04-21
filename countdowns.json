@@ -1,0 +1,15 @@
+{
+  "_comment": "Manuella countdowns som inte finns som Google Tasks. Redigera fritt. Claude Code läser denna och merge:ar med stjärnmärkta tasks med datum.",
+  "_format": "deadline är ISO 8601, tid valfri (default 23:59 lokal)",
+
+  "countdowns": [
+    {
+      "label": "Terminsslut",
+      "deadline": "2026-06-18"
+    },
+    {
+      "label": "Thesis-inlämning draft",
+      "deadline": "2026-05-03T23:59"
+    }
+  ]
+}

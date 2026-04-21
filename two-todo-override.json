@@ -1,0 +1,9 @@
+{
+  "_comment": "Om du vill bestämma dagens two-todo manuellt, sätt date till dagens datum (YYYY-MM-DD) och fyll i todos. Om date inte matchar dagens datum ignoreras filen och Claude Code väljer själv.",
+
+  "date": "",
+  "todos": [
+    "",
+    ""
+  ]
+}
