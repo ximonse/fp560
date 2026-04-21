@@ -84,6 +84,10 @@
   .persistent li.overdue { color: var(--magenta); }
   .persistent li.overdue .box { color: var(--magenta); }
   .empty-section { color: var(--fg-faint); font-size: 16px; font-style: italic; padding: 12px 0; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { text-decoration: underline; opacity: 0.85; }
+  .mail li a { display: block; }
+  .two-todo li a { color: inherit; }
   @media (max-width: 900px) {
     body { padding: 32px 24px 64px; }
     .grid { grid-template-columns: 1fr; gap: 48px; }
@@ -98,26 +102,26 @@
 <header>
   <div>
     <div class="date">tisdag 21 april</div>
-    <div class="meta">kurerad 23:29</div>
+    <div class="meta">kurerad 23:51</div>
   </div>
   <div id="clock"></div>
 </header>
 
 <section class="two-todo">
   <div class="label">idag gör du bara två saker</div>
-  <ol><li class="">Förbered NP Matematik — kolla vilka elever som behöver extra stöd</li><li class="">Gör multiquiz av matematiska begrepp (inför långpasset idag)</li></ol>
+  <ol><li><a href="https://tasks.google.com/tasks/all" target="_blank" rel="noopener">Förbered NP Matematik — kolla vilka elever som behöver extra stöd</a></li><li><a href="https://tasks.google.com/tasks/all" target="_blank" rel="noopener">Gör multiquiz av matematiska begrepp (inför långpasset idag)</a></li></ol>
 </section>
 
 <div class="grid">
 
   <section class="countdowns">
     <h2>Nedräkning</h2>
-    <ul><li class="soon"><span class="label">Thesis-inlämning draft</span><span class="time" data-deadline="2026-05-03T21:59:00.000Z">12d</span></li><li class="far"><span class="label">Terminsslut</span><span class="time" data-deadline="2026-06-18T21:59:00.000Z">58d</span></li></ul>
+    <ul><li class="soon"><a class="label" href="https://tasks.google.com/tasks/all" target="_blank" rel="noopener">Thesis-inlämning draft</a><span class="time" data-deadline="2026-05-03T21:59:00.000Z">12d</span></li><li class="far"><a class="label" href="https://tasks.google.com/tasks/all" target="_blank" rel="noopener">Terminsslut</a><span class="time" data-deadline="2026-06-18T21:59:00.000Z">58d</span></li></ul>
   </section>
 
   <section class="calendar">
     <h2>Idag</h2>
-    <ul><li class="now"><span class="time">heldag</span><span class="title">Förberedelse NP Matematik</span></li><li class="past"><span class="time">08:00</span><span class="title">SV 6.1</span></li><li class="past"><span class="time">08:20</span><span class="title">HKK/Mu</span></li><li class="past"><span class="time">09:30</span><span class="title">Nu/HKK</span></li><li class="past"><span class="time">10:40</span><span class="title">SV 6.2</span></li><li class="past"><span class="time">11:45</span><span class="title">Lunch</span></li><li class="past"><span class="time">12:30</span><span class="title">MA 6.2  2️⃣ Långpass</span></li><li class="past"><span class="time">13:15</span><span class="title">MA 6.2  2️⃣ Långpass</span></li><li class="past"><span class="time">21:00</span><span class="title">Inaktuellt Utvärdera Protesen + Joe (mobil SSH)</span></li></ul>
+    <ul><li class="now"><span class="time">heldag</span><a class="title" href="https://calendar.google.com/calendar/r/day/2026/4/20" target="_blank" rel="noopener">Förberedelse NP Matematik</a></li><li class="past"><span class="time">08:00</span><a class="title" href="https://calendar.google.com/calendar/r/day/2026/4/21" target="_blank" rel="noopener">SV 6.1</a></li><li class="past"><span class="time">08:20</span><a class="title" href="https://calendar.google.com/calendar/r/day/2026/4/21" target="_blank" rel="noopener">HKK/Mu</a></li><li class="past"><span class="time">09:30</span><a class="title" href="https://calendar.google.com/calendar/r/day/2026/4/21" target="_blank" rel="noopener">Nu/HKK</a></li><li class="past"><span class="time">10:40</span><a class="title" href="https://calendar.google.com/calendar/r/day/2026/4/21" target="_blank" rel="noopener">SV 6.2</a></li><li class="past"><span class="time">11:45</span><a class="title" href="https://calendar.google.com/calendar/r/day/2026/4/21" target="_blank" rel="noopener">Lunch</a></li><li class="past"><span class="time">12:30</span><a class="title" href="https://calendar.google.com/calendar/r/day/2026/4/21" target="_blank" rel="noopener">MA 6.2  2️⃣ Långpass</a></li><li class="past"><span class="time">13:15</span><a class="title" href="https://calendar.google.com/calendar/r/day/2026/4/21" target="_blank" rel="noopener">MA 6.2  2️⃣ Långpass</a></li><li class="past"><span class="time">21:00</span><a class="title" href="https://calendar.google.com/calendar/r/day/2026/4/21" target="_blank" rel="noopener">Inaktuellt Utvärdera Protesen + Joe (mobil SSH)</a></li></ul>
   </section>
 
   <section class="mail">
