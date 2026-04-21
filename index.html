@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Morgon</title>
+<title>Fokus</title>
 <style>
   :root {
     --bg: #1C1C1C;
@@ -15,199 +15,75 @@
     --yellow-green: #C6D645;
     --line: #2D2D2D;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   html, body {
-    background: var(--bg);
-    color: var(--fg);
+    background: var(--bg); color: var(--fg);
     font-family: "Trebuchet MS", sans-serif;
-    font-weight: normal;
-    min-height: 100vh;
-    line-height: 1.4;
+    min-height: 100vh; line-height: 1.4;
     -webkit-font-smoothing: antialiased;
   }
-
-  body {
-    padding: 48px 64px 96px;
-    max-width: 1600px;
-    margin: 0 auto;
-  }
-
-  /* Header ----------------------------------------------------------- */
+  body { padding: 48px 64px 96px; max-width: 1600px; margin: 0 auto; }
   header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--line);
-    margin-bottom: 64px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 64px;
   }
-  header .date {
-    font-size: 22px;
-    color: var(--fg);
-  }
-  header .meta {
-    font-size: 14px;
-    color: var(--fg-dim);
-  }
-  header #clock {
-    font-size: 22px;
-    color: var(--fg-dim);
-    font-variant-numeric: tabular-nums;
-    margin-left: 32px;
-  }
-
-  /* Two-todo --------------------------------------------------------- */
-  .two-todo {
-    margin-bottom: 96px;
-  }
+  header .date { font-size: 22px; }
+  header .meta { font-size: 14px; color: var(--fg-dim); }
+  header #clock { font-size: 22px; color: var(--fg-dim); font-variant-numeric: tabular-nums; margin-left: 32px; }
+  .two-todo { margin-bottom: 96px; }
   .two-todo .label {
-    color: var(--magenta);
-    font-size: 14px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 32px;
+    color: var(--magenta); font-size: 14px; letter-spacing: 0.15em;
+    text-transform: uppercase; margin-bottom: 32px;
   }
   .two-todo .label::after {
-    content: "";
-    display: block;
-    width: 64px;
-    height: 1px;
-    background: var(--magenta);
-    margin-top: 12px;
+    content: ""; display: block; width: 64px; height: 1px;
+    background: var(--magenta); margin-top: 12px;
   }
-  .two-todo ol {
-    list-style: none;
-    counter-reset: tt;
-  }
+  .two-todo ol { list-style: none; counter-reset: tt; }
   .two-todo li {
-    counter-increment: tt;
-    font-size: 44px;
-    line-height: 1.25;
-    padding: 18px 0;
-    display: flex;
-    gap: 32px;
-    align-items: baseline;
+    counter-increment: tt; font-size: 44px; line-height: 1.25;
+    padding: 18px 0; display: flex; gap: 32px; align-items: baseline;
   }
   .two-todo li::before {
-    content: counter(tt);
-    color: var(--fg-faint);
-    font-size: 44px;
-    flex: 0 0 auto;
-    min-width: 40px;
+    content: counter(tt); color: var(--fg-faint); font-size: 44px;
+    flex: 0 0 auto; min-width: 40px;
   }
-  .two-todo li.empty {
-    color: var(--fg-faint);
-    font-size: 24px;
-  }
-
-  /* Grid ------------------------------------------------------------- */
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px 96px;
-  }
+  .two-todo li.empty { color: var(--fg-faint); font-size: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px 96px; }
   section h2 {
-    color: var(--fg-dim);
-    font-size: 13px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    font-weight: normal;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--line);
+    color: var(--fg-dim); font-size: 13px; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: normal;
+    margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--line);
   }
-
-  /* Countdowns ------------------------------------------------------- */
   .countdowns ul { list-style: none; }
   .countdowns li {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 10px 0;
-    font-size: 18px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 10px 0; font-size: 18px;
   }
   .countdowns .label { color: var(--fg); }
-  .countdowns .time {
-    font-variant-numeric: tabular-nums;
-    color: var(--fg-dim);
-    font-size: 15px;
-  }
-  .countdowns .urgent .time,
-  .countdowns .urgent .label { color: var(--magenta); }
+  .countdowns .time { font-variant-numeric: tabular-nums; color: var(--fg-dim); font-size: 15px; }
+  .countdowns .urgent .time, .countdowns .urgent .label { color: var(--magenta); }
   .countdowns .soon .time { color: var(--fg); }
-  .countdowns .far .label,
-  .countdowns .far .time { color: var(--fg-faint); }
-
-  /* Calendar --------------------------------------------------------- */
+  .countdowns .far .label, .countdowns .far .time { color: var(--fg-faint); }
   .calendar ul { list-style: none; }
-  .calendar li {
-    display: flex;
-    gap: 20px;
-    padding: 10px 0;
-    font-size: 18px;
-  }
-  .calendar .time {
-    flex: 0 0 72px;
-    color: var(--fg-dim);
-    font-variant-numeric: tabular-nums;
-  }
+  .calendar li { display: flex; gap: 20px; padding: 10px 0; font-size: 18px; }
+  .calendar .time { flex: 0 0 72px; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
   .calendar .title { color: var(--fg); }
-  .calendar li.now .time,
-  .calendar li.now .title { color: var(--yellow-green); }
-  .calendar li.past { color: var(--fg-faint); }
-  .calendar li.past .title,
-  .calendar li.past .time { color: var(--fg-faint); }
-
-  /* Mail ------------------------------------------------------------- */
+  .calendar li.now .time, .calendar li.now .title { color: var(--yellow-green); }
+  .calendar li.past .title, .calendar li.past .time { color: var(--fg-faint); }
   .mail ul { list-style: none; }
-  .mail li {
-    padding: 10px 0;
-    font-size: 17px;
-    border-bottom: 1px solid var(--line);
-  }
+  .mail li { padding: 10px 0; font-size: 17px; border-bottom: 1px solid var(--line); }
   .mail li:last-child { border-bottom: none; }
-  .mail .from {
-    color: var(--fg-dim);
-    font-size: 13px;
-    display: block;
-    margin-bottom: 4px;
-  }
+  .mail .from { color: var(--fg-dim); font-size: 13px; display: block; margin-bottom: 4px; }
   .mail .subject { color: var(--fg); }
-
-  /* Persistent ------------------------------------------------------- */
   .persistent ul { list-style: none; }
-  .persistent li {
-    padding: 10px 0;
-    font-size: 18px;
-    display: flex;
-    gap: 14px;
-    align-items: baseline;
-  }
-  .persistent .box {
-    font-family: monospace;
-    color: var(--fg-dim);
-  }
-  .persistent li.done {
-    color: var(--fg-faint);
-    text-decoration: line-through;
-  }
+  .persistent li { padding: 10px 0; font-size: 18px; display: flex; gap: 14px; align-items: baseline; }
+  .persistent .box { font-family: monospace; color: var(--fg-dim); }
+  .persistent li.done { color: var(--fg-faint); text-decoration: line-through; }
   .persistent li.done .box { color: var(--fg-faint); }
-  .persistent li.overdue {
-    color: var(--magenta);
-  }
+  .persistent li.overdue { color: var(--magenta); }
   .persistent li.overdue .box { color: var(--magenta); }
-
-  /* Empty states ----------------------------------------------------- */
-  .empty-section {
-    color: var(--fg-faint);
-    font-size: 16px;
-    font-style: italic;
-    padding: 12px 0;
-  }
-
-  /* Responsive ------------------------------------------------------- */
+  .empty-section { color: var(--fg-faint); font-size: 16px; font-style: italic; padding: 12px 0; }
   @media (max-width: 900px) {
     body { padding: 32px 24px 64px; }
     .grid { grid-template-columns: 1fr; gap: 48px; }
@@ -221,91 +97,66 @@
 
 <header>
   <div>
-    <div class="date" id="date">tisdag 21 april</div>
-    <div class="meta">kurerad 06:42</div>
+    <div class="date">tisdag 21 april</div>
+    <div class="meta">kurerad 23:18</div>
   </div>
-  <div id="clock">07:42</div>
+  <div id="clock"></div>
 </header>
 
-<!-- TWO-TODO ================================================ -->
 <section class="two-todo">
   <div class="label">idag gör du bara två saker</div>
-  <ol>
-    <li>Läs igenom NP-muntligt-rubrikerna och skriv ut bedömningsstöd</li>
-    <li>Granska thesis-metodkapitlet, 45 min fokus</li>
-  </ol>
+  <ol><li class="">fixa skorna</li><li class="">Week  – Reflektera · Kolla nästa vecka</li></ol>
 </section>
 
 <div class="grid">
 
-  <!-- COUNTDOWNS ============================================ -->
   <section class="countdowns">
     <h2>Nedräkning</h2>
-    <ul>
-      <li class="urgent"><span class="label">Spanska-samtal gudbarn</span><span class="time">1d 14h</span></li>
-      <li class="urgent"><span class="label">NP muntligt 6B</span><span class="time">2d 8h</span></li>
-      <li class="soon"><span class="label">Thesis-inlämning draft</span><span class="time">12d</span></li>
-      <li class="far"><span class="label">NP skriftligt matte</span><span class="time">21d</span></li>
-      <li class="far"><span class="label">Terminsslut</span><span class="time">58d</span></li>
-    </ul>
+    <ul><li class="urgent"><span class="label">fixa skorna</span><span class="time" data-deadline="2026-02-24T00:00:00.000Z">nu</span></li><li class="urgent"><span class="label">Week  – Reflektera · Kolla nästa vecka</span><span class="time" data-deadline="2026-04-19T00:00:00.000Z">nu</span></li><li class="urgent"><span class="label">this is my students are going to write selling text for the project sensor Swedish in school</span><span class="time" data-deadline="2026-04-19T00:00:00.000Z">nu</span></li><li class="soon"><span class="label">Thesis-inlämning draft</span><span class="time" data-deadline="2026-05-03T21:59:00.000Z">12d</span></li><li class="far"><span class="label">Terminsslut</span><span class="time" data-deadline="2026-06-18T21:59:00.000Z">58d</span></li></ul>
   </section>
 
-  <!-- CALENDAR ============================================== -->
   <section class="calendar">
     <h2>Idag</h2>
-    <ul>
-      <li class="past"><span class="time">08:15</span><span class="title">Morgonmöte arbetslag</span></li>
-      <li class="now"><span class="time">10:30</span><span class="title">Matte 6B — bråk</span></li>
-      <li><span class="time">13:00</span><span class="title">Biologi 6A — ekosystem</span></li>
-      <li><span class="time">15:30</span><span class="title">Föräldrasamtal, Eriksson</span></li>
-    </ul>
+    <ul><li class="now"><span class="time">heldag</span><span class="title">Förberedelse NP Matematik</span></li><li class="past"><span class="time">08:00</span><span class="title">SV 6.1</span></li><li class="past"><span class="time">08:20</span><span class="title">HKK/Mu</span></li><li class="past"><span class="time">09:30</span><span class="title">Nu/HKK</span></li><li class="past"><span class="time">10:40</span><span class="title">SV 6.2</span></li><li class="past"><span class="time">11:45</span><span class="title">Lunch</span></li><li class="past"><span class="time">12:30</span><span class="title">MA 6.2  2️⃣ Långpass</span></li><li class="past"><span class="time">13:15</span><span class="title">MA 6.2  2️⃣ Långpass</span></li><li class="past"><span class="time">21:00</span><span class="title">Inaktuellt Utvärdera Protesen + Joe (mobil SSH)</span></li></ul>
   </section>
 
-  <!-- MAIL ================================================== -->
   <section class="mail">
     <h2>Mail att svara på</h2>
-    <ul>
-      <li>
-        <span class="from">rektor@skolan.se</span>
-        <span class="subject">Ang. NP-logistik — kan du svara innan fredag?</span>
-      </li>
-      <li>
-        <span class="from">förälder Eriksson</span>
-        <span class="subject">Fråga om hemuppgift i biologi</span>
-      </li>
-      <li>
-        <span class="from">handledare thesis</span>
-        <span class="subject">Feedback på kapitel 3</span>
-      </li>
-    </ul>
+    <ul><li><span class="from">Big Think</span><span class="subject">Why rest alone doesn’t restore energy</span></li><li><span class="from">Padlet Folks</span><span class="subject">April news: new activity panel</span></li><li><span class="from">Nature Briefing</span><span class="subject">Should we worry about AI doomsday?</span></li><li><span class="from">Lovable Labs Incorporated</span><span class="subject">Your receipt from Lovable Labs Incorporated #2763-9101</span></li><li><span class="from">ByteByteGo</span><span class="subject">How DoorDash Launches a New Country in One Week</span></li></ul>
   </section>
 
-  <!-- PERSISTENT ============================================ -->
   <section class="persistent">
     <h2>Ständiga</h2>
-    <ul>
-      <li class="done"><span class="box">[×]</span>Medicin morgon</li>
-      <li><span class="box">[ ]</span>Kolla jobbmail</li>
-      <li><span class="box">[ ]</span>Medicin kväll</li>
-      <li><span class="box">[ ]</span>Duolingo spanska</li>
-    </ul>
+    <p class="empty-section">Inga ständiga todos.</p>
   </section>
 
 </div>
 
 <script>
+  function pad(n) { return String(n).padStart(2, '0'); }
+
   function updateClock() {
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('clock').textContent = `${hh}:${mm}`;
+    const n = new Date();
+    document.getElementById('clock').textContent = pad(n.getHours()) + ':' + pad(n.getMinutes());
   }
   updateClock();
   setInterval(updateClock, 30000);
 
-  // Nedräkningar uppdateras bara vid page-reload i v1 — det räcker.
-  // Om du vill ha realtidsräkning, be Claude Code lägga till det.
+  function updateCountdowns() {
+    document.querySelectorAll('.time[data-deadline]').forEach(el => {
+      const diff = new Date(el.dataset.deadline) - new Date();
+      if (diff <= 0) { el.textContent = 'nu'; return; }
+      const totalH = Math.floor(diff / 3600000);
+      const d = Math.floor(totalH / 24);
+      const h = totalH % 24;
+      const m = Math.floor((diff % 3600000) / 60000);
+      if (totalH < 24) el.textContent = totalH + 'h ' + m + 'm';
+      else if (d < 3) el.textContent = d + 'd ' + h + 'h';
+      else el.textContent = d + 'd';
+    });
+  }
+  updateCountdowns();
+  setInterval(updateCountdowns, 60000);
 </script>
-
 </body>
 </html>
