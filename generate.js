@@ -428,10 +428,9 @@ function buildHtml({ todos, countdowns, events, mail, standiga, curatedAt }) {
 </html>`;
 }
 
-// ── Main ─────────────────────────────────────────────────────────────────────
+// ── Fetch all data ───────────────────────────────────────────────────────────
 
-async function main() {
-  console.log('Hämtar data...');
+async function fetchAllData() {
   const auth = getAuth();
 
   const [calEvents, taskLists, rawMail] = await Promise.all([
@@ -440,7 +439,6 @@ async function main() {
     fetchGmail(auth).catch(e => { console.warn('Gmail:', e.message); return []; }),
   ]);
 
-  // Tasks: all lists for countdowns, "Ständiga" for persistent
   const standigaList = taskLists.find(l => l.title === 'Ständiga');
   const allTasksArrays = await Promise.all(
     taskLists.map(l => fetchTasksForList(auth, l.id).catch(() => []))
@@ -450,20 +448,72 @@ async function main() {
     : [];
 
   const allTasks = allTasksArrays.flat();
+  const obsidian = readObsidianDaily();
+
+  return { calEvents, allTasks, standigaTasks, rawMail, obsidian };
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
+
+async function main() {
+  const dataOnly = process.argv.includes('--data-only');
+
+  console.log('Hämtar data...');
+  const { calEvents, allTasks, standigaTasks, rawMail, obsidian } = await fetchAllData();
+
   const taskCountdowns = tasksToCountdowns(allTasks);
   const manualCountdowns = readManualCountdowns();
   const countdowns = mergeCountdowns(manualCountdowns, taskCountdowns);
-
   const mail = filterMail(rawMail);
   const events = formatEvents(calEvents);
 
-  const override = readOverride();
-  const todos = override || autoSelectTodos(allTasks, calEvents, readObsidianDaily());
+  if (dataOnly) {
+    // Spara rådata för Claude att resonera över
+    const dataDir = join(__dirname, 'data');
+    if (!existsSync(dataDir)) { import('fs').then(fs => fs.mkdirSync(dataDir)); }
+    const { mkdirSync } = await import('fs');
+    if (!existsSync(dataDir)) mkdirSync(dataDir);
+
+    const raw = {
+      date: new Date().toISOString().slice(0, 10),
+      calendar: calEvents.map(e => ({
+        title: e.summary,
+        start: e.start.dateTime || e.start.date,
+        end: e.end.dateTime || e.end.date,
+      })),
+      tasks: allTasks
+        .filter(t => t.status === 'needsAction')
+        .map(t => ({ title: t.title, due: t.due || null, notes: t.notes || null })),
+      standiga: standigaTasks.map(t => ({ title: t.title, done: t.status === 'completed' })),
+      mail: mail.map(e => ({ from: e.from, subject: e.subject, snippet: e.snippet })),
+      countdowns: countdowns.map(c => ({ label: c.label, deadline: c.deadline.toISOString() })),
+      obsidian: obsidian || null,
+    };
+
+    writeFileSync(join(__dirname, 'data', 'raw.json'), JSON.stringify(raw, null, 2), 'utf-8');
+    console.log('data/raw.json skriven. Claude kan nu välja two-todos.');
+    return;
+  }
+
+  // Läs Claude-kurering om den finns och är från idag
+  const today = new Date().toISOString().slice(0, 10);
+  const curatedPath = join(__dirname, 'data', 'curated.json');
+  let claudeCurated = null;
+  if (existsSync(curatedPath)) {
+    const c = JSON.parse(readFileSync(curatedPath, 'utf-8'));
+    if (c.date === today) claudeCurated = c;
+  }
+
+  const todos = claudeCurated?.todos || readOverride() || autoSelectTodos(allTasks, calEvents, obsidian);
+  const finalCountdowns = claudeCurated?.countdowns
+    ? claudeCurated.countdowns.map(c => ({ label: c.label, deadline: new Date(c.deadline) }))
+    : countdowns;
+  const finalMail = claudeCurated?.mail || mail;
 
   const now = new Date();
   const curatedAt = now.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
 
-  const html = buildHtml({ todos, countdowns, events, mail, standiga: standigaTasks, curatedAt });
+  const html = buildHtml({ todos, countdowns: finalCountdowns, events, mail: finalMail, standiga: standigaTasks, curatedAt });
   writeFileSync(join(__dirname, 'index.html'), html, 'utf-8');
   console.log('index.html skriven.');
 
@@ -475,9 +525,9 @@ async function main() {
 
   console.log('\n--- Sammanfattning ---');
   console.log('Two-todos:', todos);
-  const urgent = countdowns.filter(c => (c.deadline - new Date()) < 3 * 86400000);
+  const urgent = finalCountdowns.filter(c => (c.deadline - new Date()) < 3 * 86400000);
   if (urgent.length) console.log('Akuta nedräkningar:', urgent.map(c => c.label).join(', '));
-  if (!readObsidianDaily()) console.log('OBS: Ingen Obsidian daily för idag.');
+  if (!obsidian) console.log('OBS: Ingen Obsidian daily för idag.');
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

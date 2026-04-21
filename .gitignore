@@ -2,3 +2,5 @@ node_modules/
 credentials.json
 google-token.json
 .env
+data/raw.json
+data/curated.json
