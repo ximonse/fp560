@@ -8,9 +8,59 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 function localDateStr(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-const CREDENTIALS_PATH = 'C:/Users/ximon/.google-auth/credentials.json';
-const TOKEN_PATH = 'C:/Users/ximon/.google-auth/google-token.json';
-const OBSIDIAN_DAILY = 'C:/Users/ximon/Hermes Vault/Daily';
+const CREDENTIALS_PATH = process.env.GOOGLE_CLIENT_SECRET_PATH || '/home/ximon/.hermes/google_client_secret.json';
+const TOKEN_PATH = process.env.GOOGLE_TOKEN_PATH || '/home/ximon/.hermes/google_token.json';
+const OBSIDIAN_DAILY_PATHS = [
+  process.env.OBSIDIAN_DAILY_PATH,
+  '/mnt/c/Users/ximon/Hermes Vault',
+  '/mnt/c/Users/ximon/Hermes Vault/Daily',
+].filter(Boolean);
+
+function startOfLocalDay(d = new Date()) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function normalizeTaskTitle(str) {
+  return String(str || ‘’)
+    .toLowerCase()
+    .replace(/[.,:;!?”’’””()\[\]]/g, ‘ ‘)
+    .replace(/\s+/g, ‘ ‘)
+    .trim();
+}
+
+function comparableTaskTitle(str) {
+  return normalizeTaskTitle(str)
+    .replace(/\b\d+\s*(min|h|tim|timmar)\b.*$/, ‘’)
+    .trim();
+}
+
+function titleMatchesCompleted(title, completedTitles) {
+  const normalized = comparableTaskTitle(title);
+  if (!normalized || normalized.length < 8) return false;
+  for (const completed of completedTitles) {
+    if (!completed || completed.length < 8) continue;
+    if (completed === normalized) return true;
+    if (completed.length >= 15 && normalized.startsWith(completed)) return true;
+    if (normalized.length >= 15 && completed.startsWith(normalized)) return true;
+  }
+  return false;
+}
+
+function isGarbled(title) {
+  if (!title) return true;
+  if (title.includes(‘\n’)) return true;
+  const trimmed = title.trim();
+  if (trimmed.split(/\s+/).length === 1 && trimmed.length <= 4) return true;
+  return false;
+}
+
+// ── Mode ──────────────────────────────────────────────────────────────────────
+
+function getMode() {
+  const now = new Date();
+  const mins = now.getHours() * 60 + now.getMinutes();
+  return mins >= 5 * 60 && mins < 16 * 60 + 30 ? ‘work’ : ‘home’;
+}
 
 // ── Auth ────────────────────────────────────────────────────────────────────
 
@@ -103,6 +153,9 @@ function filterMail(emails) {
 
 // ── Countdowns ───────────────────────────────────────────────────────────────
 
+const CAL_COUNTDOWN_RE = /\b(np|möte|konferens|deadline|inlämning|utvecklingssamtal|resa|besök|presentation|prov|provvecka)\b/i;
+const CAL_PREP_RE = /\b(np|möte|samtal|presentation|konferens|prov)\b/i;
+
 function readManualCountdowns() {
   const path = join(__dirname, 'countdowns.json');
   const data = JSON.parse(readFileSync(path, 'utf-8'));
@@ -112,13 +165,52 @@ function readManualCountdowns() {
   }));
 }
 
-function tasksToCountdowns(tasks) {
-  return tasks
-    .filter(t => t.due && t.status === 'needsAction')
-    .map(t => ({
-      label: t.title,
-      deadline: new Date(t.due),
-    }));
+function calendarToCountdowns(events) {
+  const now = new Date();
+  const in7days = new Date(now.getTime() + 7 * 86400000);
+  return events
+    .filter(e => {
+      const start = new Date(e.start.dateTime || e.start.date);
+      return start > now && start <= in7days && CAL_COUNTDOWN_RE.test(e.summary || '');
+    })
+    .map(e => ({ label: e.summary, deadline: new Date(e.start.dateTime || e.start.date) }));
+}
+
+function selectCountdowns(mode, tasksByList, calCandidates, manualCountdowns) {
+  const now = new Date();
+  const today = startOfLocalDay();
+  const acuteCutoff = new Date(now.getTime() + 72 * 3600000);
+
+  const ribba = (tasksByList['Ribbaskolan'] || [])
+    .filter(t => t.status === 'needsAction' && t.due && !isGarbled(t.title))
+    .map(t => ({ label: t.title, deadline: new Date(t.due) }));
+
+  const other = Object.entries(tasksByList)
+    .filter(([name]) => !['Ribbaskolan', 'Ständiga'].includes(name))
+    .flatMap(([, tasks]) => tasks)
+    .filter(t => t.status === 'needsAction' && t.due && !isGarbled(t.title))
+    .map(t => ({ label: t.title, deadline: new Date(t.due) }));
+
+  const allTaskCandidates = [...ribba, ...other].filter(c => c.deadline >= today);
+
+  // Acute (<72h) always shows regardless of mode
+  const acute = allTaskCandidates.filter(c => c.deadline <= acuteCutoff);
+
+  // Mode-relevant non-acute
+  const modePool = mode === 'work' ? ribba : other;
+  const modeRelevant = modePool.filter(c => c.deadline > acuteCutoff && c.deadline >= today);
+
+  const candidates = [...manualCountdowns, ...calCandidates, ...acute, ...modeRelevant];
+
+  const seen = new Set();
+  return candidates
+    .filter(c => {
+      if (seen.has(c.label)) return false;
+      seen.add(c.label);
+      return c.deadline >= today;
+    })
+    .sort((a, b) => a.deadline - b.deadline)
+    .slice(0, 5);
 }
 
 function formatCountdown(deadline) {
@@ -132,16 +224,6 @@ function formatCountdown(deadline) {
   return { text: `${d}d`, cls: 'far' };
 }
 
-function mergeCountdowns(manual, fromTasks) {
-  const seen = new Set();
-  const all = [...manual, ...fromTasks].filter(c => {
-    if (seen.has(c.label)) return false;
-    seen.add(c.label);
-    return true;
-  });
-  return all.sort((a, b) => a.deadline - b.deadline).slice(0, 6);
-}
-
 // ── Two-todo ─────────────────────────────────────────────────────────────────
 
 function readOverride() {
@@ -152,31 +234,36 @@ function readOverride() {
   return null;
 }
 
-function autoSelectTodos(tasks, events, obsidian) {
+function autoSelectTodos(mode, tasksByList, events) {
   const now = new Date();
+  const today = startOfLocalDay();
   const in3days = new Date(now.getTime() + 3 * 86400000);
 
-  const urgent = tasks
-    .filter(t => t.due && t.status === 'needsAction' && new Date(t.due) <= in3days)
+  const ribba = (tasksByList['Ribbaskolan'] || [])
+    .filter(t => t.status === 'needsAction' && !isGarbled(t.title));
+  const other = Object.entries(tasksByList)
+    .filter(([name]) => !['Ribbaskolan', 'Ständiga'].includes(name))
+    .flatMap(([, tasks]) => tasks)
+    .filter(t => t.status === 'needsAction' && !isGarbled(t.title));
+
+  const sourceTasks = mode === 'work' ? ribba : other;
+
+  const urgent = sourceTasks
+    .filter(t => t.due && new Date(t.due) >= today && new Date(t.due) <= in3days)
     .sort((a, b) => new Date(a.due) - new Date(b.due))
     .map(t => t.title);
 
   if (urgent.length >= 2) return urgent.slice(0, 2);
 
-  // Check calendar for prep-needed meetings
-  const prepNeeded = events
-    .filter(e => {
-      const title = (e.summary || '').toLowerCase();
-      return title.includes('möte') || title.includes('samtal') || title.includes('presentation') || title.includes('np');
-    })
+  const calPrep = events
+    .filter(e => CAL_PREP_RE.test(e.summary || ''))
     .map(e => `Förbered: ${e.summary}`);
 
-  const candidates = [...urgent, ...prepNeeded];
+  const candidates = [...new Set([...urgent, ...calPrep])];
   if (candidates.length >= 2) return candidates.slice(0, 2);
 
-  // Fall back to any task with due date
-  const withDue = tasks
-    .filter(t => t.due && t.status === 'needsAction')
+  const withDue = sourceTasks
+    .filter(t => t.due && new Date(t.due) >= today)
     .sort((a, b) => new Date(a.due) - new Date(b.due))
     .map(t => t.title);
 
@@ -190,9 +277,11 @@ function autoSelectTodos(tasks, events, obsidian) {
 
 function readObsidianDaily() {
   const today = localDateStr();
-  const path = join(OBSIDIAN_DAILY, `${today}.md`);
-  if (!existsSync(path)) return null;
-  return readFileSync(path, 'utf-8');
+  for (const basePath of OBSIDIAN_DAILY_PATHS) {
+    const path = join(basePath, `${today}.md`);
+    if (existsSync(path)) return readFileSync(path, 'utf-8');
+  }
+  return null;
 }
 
 // ── Calendar formatting ──────────────────────────────────────────────────────
@@ -458,17 +547,37 @@ async function fetchAllData() {
   ]);
 
   const standigaList = taskLists.find(l => l.title === 'Ständiga');
+
   const allTasksArrays = await Promise.all(
-    taskLists.map(l => fetchTasksForList(auth, l.id).catch(() => []))
+    taskLists.map(async l => {
+      const tasks = await fetchTasksForList(auth, l.id).catch(() => []);
+      return tasks.map(t => ({ ...t, _list: l.title }));
+    })
+  );
+  const completedTasksArrays = await Promise.all(
+    taskLists.map(l => fetchTasksForList(auth, l.id, true).catch(() => []))
   );
   const standigaTasks = standigaList
     ? await fetchTasksForList(auth, standigaList.id, true).catch(() => [])
     : [];
 
   const allTasks = allTasksArrays.flat();
+
+  const tasksByList = {};
+  for (const t of allTasks) {
+    const name = t._list || 'Övrigt';
+    if (!tasksByList[name]) tasksByList[name] = [];
+    tasksByList[name].push(t);
+  }
+
+  const completedTaskTitles = completedTasksArrays
+    .flat()
+    .filter(t => t.status === 'completed')
+    .map(t => comparableTaskTitle(t.title))
+    .filter(Boolean);
   const obsidian = readObsidianDaily();
 
-  return { calEvents, allTasks, standigaTasks, rawMail, obsidian };
+  return { calEvents, allTasks, tasksByList, completedTaskTitles, standigaTasks, rawMail, obsidian };
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -477,31 +586,31 @@ async function main() {
   const dataOnly = process.argv.includes('--data-only');
 
   console.log('Hämtar data...');
-  const { calEvents, allTasks, standigaTasks, rawMail, obsidian } = await fetchAllData();
+  const { calEvents, allTasks, tasksByList, completedTaskTitles, standigaTasks, rawMail, obsidian } = await fetchAllData();
 
-  const taskCountdowns = tasksToCountdowns(allTasks);
+  const mode = getMode();
   const manualCountdowns = readManualCountdowns();
-  const countdowns = mergeCountdowns(manualCountdowns, taskCountdowns);
+  const calCandidates = calendarToCountdowns(calEvents);
+  const countdowns = selectCountdowns(mode, tasksByList, calCandidates, manualCountdowns);
   const mail = filterMail(rawMail);
   const events = formatEvents(calEvents);
 
   if (dataOnly) {
-    // Spara rådata för Claude att resonera över
     const dataDir = join(__dirname, 'data');
-    if (!existsSync(dataDir)) { import('fs').then(fs => fs.mkdirSync(dataDir)); }
     const { mkdirSync } = await import('fs');
     if (!existsSync(dataDir)) mkdirSync(dataDir);
 
     const raw = {
       date: localDateStr(),
+      mode,
       calendar: calEvents.map(e => ({
         title: e.summary,
         start: e.start.dateTime || e.start.date,
         end: e.end.dateTime || e.end.date,
       })),
       tasks: allTasks
-        .filter(t => t.status === 'needsAction')
-        .map(t => ({ title: t.title, due: t.due || null, notes: t.notes || null })),
+        .filter(t => t.status === 'needsAction' && !isGarbled(t.title))
+        .map(t => ({ title: t.title, due: t.due || null, list: t._list || null })),
       standiga: standigaTasks.map(t => ({ title: t.title, done: t.status === 'completed' })),
       mail: mail.map(e => ({ from: e.from, subject: e.subject, snippet: e.snippet })),
       countdowns: countdowns.map(c => ({ label: c.label, deadline: c.deadline.toISOString() })),
@@ -513,7 +622,6 @@ async function main() {
     return;
   }
 
-  // Läs Claude-kurering om den finns och är från idag
   const today = localDateStr();
   const curatedPath = join(__dirname, 'data', 'curated.json');
   let claudeCurated = null;
@@ -522,7 +630,13 @@ async function main() {
     if (c.date === today) claudeCurated = c;
   }
 
-  const todos = claudeCurated?.todos || readOverride() || autoSelectTodos(allTasks, calEvents, obsidian);
+  const fallbackTodos = autoSelectTodos(mode, tasksByList, calEvents);
+  const candidateTodos = claudeCurated?.todos || readOverride() || fallbackTodos;
+  const filteredTodos = candidateTodos.filter(t => !titleMatchesCompleted(t, completedTaskTitles));
+  const todos = filteredTodos.length >= 2
+    ? filteredTodos.slice(0, 2)
+    : [...filteredTodos, ...fallbackTodos.filter(t => !titleMatchesCompleted(t, completedTaskTitles) && !filteredTodos.includes(t))].slice(0, 2);
+
   const finalCountdowns = claudeCurated?.countdowns
     ? claudeCurated.countdowns.map(c => ({ label: c.label, deadline: new Date(c.deadline) }))
     : countdowns;
@@ -541,9 +655,9 @@ async function main() {
   execSync(`git -C "${__dirname}" push`, { stdio: 'inherit' });
   console.log(`\nDone. Sidan deployar till https://ximonse.github.io/fp560/`);
 
-  console.log('\n--- Sammanfattning ---');
+  console.log(`\n--- Sammanfattning (mode: ${mode}) ---`);
   console.log('Two-todos:', todos);
-  const urgent = finalCountdowns.filter(c => (c.deadline - new Date()) < 3 * 86400000);
+  const urgent = finalCountdowns.filter(c => (c.deadline - now) < 3 * 86400000);
   if (urgent.length) console.log('Akuta nedräkningar:', urgent.map(c => c.label).join(', '));
   if (!obsidian) console.log('OBS: Ingen Obsidian daily för idag.');
 }
