@@ -21,16 +21,16 @@ function startOfLocalDay(d = new Date()) {
 }
 
 function normalizeTaskTitle(str) {
-  return String(str || ‘’)
+  return String(str || '')
     .toLowerCase()
-    .replace(/[.,:;!?”’’””()\[\]]/g, ‘ ‘)
-    .replace(/\s+/g, ‘ ‘)
+    .replace(/[.,:;!?"'()\[\]]/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
 function comparableTaskTitle(str) {
   return normalizeTaskTitle(str)
-    .replace(/\b\d+\s*(min|h|tim|timmar)\b.*$/, ‘’)
+    .replace(/\b\d+\s*(min|h|tim|timmar)\b.*$/, '')
     .trim();
 }
 
@@ -48,7 +48,7 @@ function titleMatchesCompleted(title, completedTitles) {
 
 function isGarbled(title) {
   if (!title) return true;
-  if (title.includes(‘\n’)) return true;
+  if (title.includes('\n')) return true;
   const trimmed = title.trim();
   if (trimmed.split(/\s+/).length === 1 && trimmed.length <= 4) return true;
   return false;
@@ -59,7 +59,7 @@ function isGarbled(title) {
 function getMode() {
   const now = new Date();
   const mins = now.getHours() * 60 + now.getMinutes();
-  return mins >= 5 * 60 && mins < 16 * 60 + 30 ? ‘work’ : ‘home’;
+  return mins >= 5 * 60 && mins < 16 * 60 + 30 ? 'work' : 'home';
 }
 
 // ── Auth ────────────────────────────────────────────────────────────────────
