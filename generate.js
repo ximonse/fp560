@@ -5,6 +5,9 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+function localDateStr(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
 const CREDENTIALS_PATH = 'C:/Users/ximon/.google-auth/credentials.json';
 const TOKEN_PATH = 'C:/Users/ximon/.google-auth/google-token.json';
 const OBSIDIAN_DAILY = 'C:/Users/ximon/Hermes Vault/Daily';
@@ -78,6 +81,7 @@ async function fetchGmail(auth) {
     from: d.data.payload.headers.find(h => h.name === 'From')?.value || '',
     subject: d.data.payload.headers.find(h => h.name === 'Subject')?.value || '(inget ämne)',
     snippet: d.data.snippet || '',
+    id: d.data.id,
   }));
 }
 
@@ -143,7 +147,7 @@ function mergeCountdowns(manual, fromTasks) {
 function readOverride() {
   const path = join(__dirname, 'two-todo-override.json');
   const data = JSON.parse(readFileSync(path, 'utf-8'));
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateStr();
   if (data.date === today && data.todos?.some(t => t.trim())) return data.todos;
   return null;
 }
@@ -185,7 +189,7 @@ function autoSelectTodos(tasks, events, obsidian) {
 // ── Obsidian daily ───────────────────────────────────────────────────────────
 
 function readObsidianDaily() {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateStr();
   const path = join(OBSIDIAN_DAILY, `${today}.md`);
   if (!existsSync(path)) return null;
   return readFileSync(path, 'utf-8');
@@ -204,7 +208,11 @@ function formatEvents(events) {
     let cls = '';
     if (end < now) cls = 'past';
     else if (start <= now && end > now) cls = 'now';
-    return { time: timeStr, title: e.summary || 'Namnlöst event', cls };
+    const y = start.getFullYear();
+    const m = start.getMonth() + 1;
+    const d = start.getDate();
+    const url = `https://calendar.google.com/calendar/r/day/${y}/${m}/${d}`;
+    return { time: timeStr, title: e.summary || 'Namnlöst event', cls, url };
   });
 }
 
@@ -220,24 +228,28 @@ function esc(str) {
 
 function renderCountdowns(countdowns) {
   if (!countdowns.length) return '<p class="empty-section">Inga nedräkningar.</p>';
+  const tasksUrl = 'https://tasks.google.com/tasks/all';
   return '<ul>' + countdowns.map(c => {
     const { text, cls } = formatCountdown(c.deadline);
-    return `<li class="${cls}"><span class="label">${esc(c.label)}</span><span class="time" data-deadline="${c.deadline.toISOString()}">${esc(text)}</span></li>`;
+    return `<li class="${cls}"><a class="label" href="${tasksUrl}" target="_blank" rel="noopener">${esc(c.label)}</a><span class="time" data-deadline="${c.deadline.toISOString()}">${esc(text)}</span></li>`;
   }).join('') + '</ul>';
 }
 
 function renderEvents(events) {
   if (!events.length) return '<p class="empty-section">Inga möten idag. Bra.</p>';
   return '<ul>' + events.map(e =>
-    `<li class="${e.cls}"><span class="time">${esc(e.time)}</span><span class="title">${esc(e.title)}</span></li>`
+    `<li class="${e.cls}"><span class="time">${esc(e.time)}</span><a class="title" href="${e.url}" target="_blank" rel="noopener">${esc(e.title)}</a></li>`
   ).join('') + '</ul>';
 }
 
 function renderMail(emails) {
   if (!emails.length) return '<p class="empty-section">Inga mail att svara på.</p>';
-  return '<ul>' + emails.map(e =>
-    `<li><span class="from">${esc(e.from.replace(/<.*>/, '').trim())}</span><span class="subject">${esc(e.subject)}</span></li>`
-  ).join('') + '</ul>';
+  return '<ul>' + emails.map(e => {
+    const url = e.id
+      ? `https://mail.google.com/mail/u/0/#inbox/${e.id}`
+      : `https://mail.google.com/mail/u/0/#inbox`;
+    return `<li><a href="${url}" target="_blank" rel="noopener"><span class="from">${esc(e.from.replace(/<.*>/, '').trim())}</span><span class="subject">${esc(e.subject)}</span></a></li>`;
+  }).join('') + '</ul>';
 }
 
 function renderStandiga(tasks) {
@@ -254,9 +266,11 @@ function renderStandiga(tasks) {
 }
 
 function renderTodos(todos) {
+  const tasksUrl = 'https://tasks.google.com/tasks/all';
   return todos.map((t, i) => {
     const empty = !t || t.startsWith('Lägg till');
-    return `<li class="${empty ? 'empty' : ''}">${esc(t || 'Lägg till en todo om du vill')}</li>`;
+    if (empty) return `<li class="empty">${esc(t || 'Lägg till en todo om du vill')}</li>`;
+    return `<li><a href="${tasksUrl}" target="_blank" rel="noopener">${esc(t)}</a></li>`;
   }).join('');
 }
 
@@ -350,6 +364,10 @@ function buildHtml({ todos, countdowns, events, mail, standiga, curatedAt }) {
   .persistent li.overdue { color: var(--magenta); }
   .persistent li.overdue .box { color: var(--magenta); }
   .empty-section { color: var(--fg-faint); font-size: 16px; font-style: italic; padding: 12px 0; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { text-decoration: underline; opacity: 0.85; }
+  .mail li a { display: block; }
+  .two-todo li a { color: inherit; }
   @media (max-width: 900px) {
     body { padding: 32px 24px 64px; }
     .grid { grid-template-columns: 1fr; gap: 48px; }
@@ -475,7 +493,7 @@ async function main() {
     if (!existsSync(dataDir)) mkdirSync(dataDir);
 
     const raw = {
-      date: new Date().toISOString().slice(0, 10),
+      date: localDateStr(),
       calendar: calEvents.map(e => ({
         title: e.summary,
         start: e.start.dateTime || e.start.date,
@@ -496,7 +514,7 @@ async function main() {
   }
 
   // Läs Claude-kurering om den finns och är från idag
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateStr();
   const curatedPath = join(__dirname, 'data', 'curated.json');
   let claudeCurated = null;
   if (existsSync(curatedPath)) {
