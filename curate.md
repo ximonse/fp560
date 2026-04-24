@@ -6,24 +6,27 @@ ska du generera `index.html` baserat på instruktionerna nedan, committa och pus
 ## Princip
 
 Sidan är en **anti-daily-page**: en plats Simon inte ska kunna pilla med.
-Den är en ren läs-vy. Inga länkar ut, inga knappar, ingen interaktion.
-Bara det viktigaste, tydligt framför näsan.
+Den är en ren läs-vy. Ingen interaktion. Bara det viktigaste, tydligt framför näsan.
+
+Du är inte ett filter — du är en redaktör. Din uppgift är att **tolka, sammanfatta
+och skriva om** så att sidan faktiskt är användbar, inte bara korrekt.
 
 Om du är osäker på en detalj — fråga hellre än gissa. En dag utan sida är
 bättre än en dag med fel sida.
 
 ## Datakällor
 
-Hämta i denna ordning:
+Kör `node generate.js --data-only` för att hämta data till `data/raw.json`.
+Läs sedan `data/raw.json` och gör dina redaktörsbeslut.
 
-1. **Google Calendar** — dagens events (från nu till midnatt)
-2. **Google Tasks**:
-   - Alla listor, plocka ut stjärnmärkta tasks med datum → countdowns
-   - Listan som heter "Ständiga" → ständiga todos (visa bockade med strike-through)
-3. **Gmail** — olästa i inbox, filtrera hårt (se nedan)
-4. **Obsidian daily** — `~/Obsidian/[valv]/Daily/YYYY-MM-DD.md` om den finns
-5. **Manuella countdowns** — läs `data/countdowns.json`
-6. **Manuell two-todo override** — läs `data/two-todo-override.json` om den finns och har dagens datum
+Fälten i raw.json:
+- `calendar` — dagens events med start/sluttid
+- `tasks` — alla öppna tasks med `due` (datum) och `list` (vilken lista)
+- `standiga` — tasks från "Ständiga"-listan
+- `mail` — olästa mail (redan grovfiltrerade)
+- `countdowns` — föreslagna nedräkningar
+- `obsidian` — innehållet i dagens Obsidian daily note (eller null)
+- `mode` — "work" eller "home"
 
 ## Two-todo-logik
 
@@ -31,65 +34,74 @@ Två todos idag, inte fler.
 
 - Om `data/two-todo-override.json` finns med dagens datum → använd den, skriv inte över.
 - Annars: välj **två** saker baserat på:
-  1. Deadlines inom 3 dagar (störst vikt)
-  2. Dagens kalender (om möte kräver förberedelse → förberedelse är todo)
+  1. Tasks med deadline inom 3 dagar (störst vikt)
+  2. Dagens kalender — om ett möte kräver förberedelse → förberedelse är todo
   3. Obsidian daily om den innehåller tydliga prioriteter
-  4. Stjärnmärkta tasks utan datum (mindre vikt)
 
-Välj saker som är **gör-bara idag**, inte "jobba på thesis" (för luddigt).
-Bra: "Skriv utkast till NP-muntligt-instruktion, 45 min". Dåligt: "Thesis".
+**Skriv om task-titlar** till att vara konkreta och görliga idag.
+Dåligt: "Thesis". Bra: "Skriv utkast till NP-muntligt-instruktion, 45 min".
+Om originaltiteln är tillräckligt tydlig — behåll den.
+
+Välj bara tasks som har ett `due`-datum. Plocka inte in odaterade tasks.
 
 Om du inte kan välja två bra saker — sätt en, och lämna plats 2 tom med
 texten "Lägg till en till om du vill". Tvinga inte fram två.
+
+## Kalender-summering
+
+Titta på dagens events och skriv en `calSummary` — en eller två meningar som
+fångar vad dagen egentligen handlar om.
+
+Bra: "Tre lektioner fram till lunch, sedan möte med rektor. Det viktiga är agendapunkten om schema."
+Dåligt: "Du har möten kl 08:00, 09:30, 10:15 och 13:00."
+
+- Om det är 1–2 enkla events utan dramatik → lämna `calSummary` som `null`, visa listan som vanligt.
+- Om det är 3+ events, eller dagen har ett tydligt tema → skriv en summering.
+- Om ett event sticker ut som viktigt → lyft det explicit i summeringen.
 
 ## Gmail-filtrering
 
 Inte alla olästa mail. Max 5 st. Filtrera bort:
 - Newsletters, notifikationer från GitHub/Vercel/etc
-- Marknadsföring
-- Automatiska bekräftelser
+- Marknadsföring, automatiska bekräftelser
 
 Behåll:
 - Mail från människor som svarar eller frågar direkt
-- Mail med Simons namn i ämnet
 - Skol-/jobbrelaterade mail (rektor, föräldrar, kollegor)
 - Mail med tydlig deadline eller fråga
 
-Om du är osäker på ett mail — ta med det. Bättre att visa ett mail för mycket
-än att missa ett viktigt.
+Om du är osäker på ett mail — ta med det.
 
 ## Countdowns
 
-Två källor:
-- `data/countdowns.json` (manuella, långsiktiga)
-- Stjärnmärkta Google Tasks med datum (dynamiska)
-
-Merge:a dem. Sortera efter närhet. Visa format:
-- `< 1 dag`: "6h 23m" i magenta
-- `< 3 dagar`: "2d 4h" i magenta
-- `< 14 dagar`: "12d" i off-white
-- Längre: "24d" dämpad
-
-Max 6 countdowns på sidan. Om fler — visa de närmaste 6 + "+ N fler".
+Två källor i raw.json: `countdowns` (föreslagna från script) och manuella från `data/countdowns.json`.
+Merge:a, sortera efter närhet, max 6. Plocka bort dubbletter.
+Välj bara items med `deadline`.
 
 ## Ständiga todos
 
-Läs Google Tasks-listan "Ständiga". Visa alla. Bockade = strike-through,
-dämpad färg. Obockade = normal. Efter kl 10:00 och någon är obockad,
-visa den i magenta (akut). Lokal tid: Europe/Stockholm.
+Läs `standiga`-fältet ur raw.json. Visa alla — bockade med strike-through.
+
+## curated.json — format
+
+Skriv ditt redaktörsbeslut till `data/curated.json`:
+
+```json
+{
+  "date": "YYYY-MM-DD",
+  "todos": ["Konkret todo 1", "Konkret todo 2"],
+  "calSummary": "En eller två meningar om dagen. Null om 1-2 enkla events.",
+  "countdowns": [{ "label": "...", "deadline": "ISO-sträng" }],
+  "mail": [{ "from": "...", "subject": "...", "snippet": "...", "id": "..." }]
+}
+```
+
+Kör sedan `node generate.js` (utan --data-only) för att rendera och deploya.
 
 ## HTML-generering
 
-Skriv hela `index.html` med data inbakad som statisk HTML.
-Ingen JavaScript-fetch till APIer. Ingen klient-side-logik.
-Den ENDA JS som får finnas är:
-- En klocka som uppdaterar sig själv
-- Nedräkningar som räknar ned varje minut
-
-All annan data är statisk och färsk från det ögonblick du genererade sidan.
-
-Använd `site/template.html` som startpunkt — kopiera och fyll i.
-Om template inte finns eller du vill justera layout, fråga Simon.
+`generate.js` bygger `index.html` med statisk data. Ingen klient-side-fetch.
+Den ENDA JS som får finnas är klockan och nedräkningarna.
 
 ## Meta-tag för obskyrhet
 
@@ -106,9 +118,9 @@ Format: `Morgonsida YYYY-MM-DD HH:MM`
 
 Berätta kort för Simon:
 - Vilka två todos du valde och varför
-- Om du filtrerade bort något som kan vara relevant
-- Om någon countdown blev akut (< 3 dagar) sedan förra sidan
-- Om Obsidian daily saknades eller var tom
+- Vad du skrev i kalender-summeringen (om du skrev en)
+- Om du skrivit om någon task-titel
+- Om någon countdown är akut (< 3 dagar)
 
 Håll det kort. 3–5 rader.
 
@@ -117,5 +129,4 @@ Håll det kort. 3–5 rader.
 - API nere / ingen auth: generera sidan med det du har, markera saknade
   sektioner med "Data saknas för tillfället". Committa inte om hälften
   av datat saknas — fråga Simon istället.
-- Inga tasks / inga mail / tom kalender: det är okej, visa tomma sektioner
-  med rimlig text ("Inga möten idag. Bra.").
+- Inga tasks / inga mail / tom kalender: visa tomma sektioner med rimlig text.
