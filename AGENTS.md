@@ -9,33 +9,48 @@ When Simon says "gör morgonsidan", "fokus", "morgon", or similar — generate t
 
 ## Your job
 
-1. Fetch data from all sources (see below)
-2. Generate `index.html` with all data baked in as static HTML
-3. Commit: `Morgonsida YYYY-MM-DD HH:MM`
-4. Push to main → GitHub Actions deploys automatically
+You are an **editor**, not a filter. Your task is to interpret, summarize, and rewrite — not just copy data.
 
-## Data sources
+1. Run `node generate.js --data-only` → writes `data/raw.json`
+2. Read `data/raw.json` and make editorial decisions
+3. Write `data/curated.json` with your decisions
+4. Run `node generate.js` → builds `index.html`, commits, pushes
+5. Tell Simon what you decided and why (3–5 lines)
 
-Fetch in parallel:
+## Data sources (in raw.json)
 
-| Source | What to get |
-|--------|-------------|
-| Google Calendar | Today's events from now until midnight |
-| Google Tasks (all lists) | Starred tasks with dates → countdowns |
-| Google Tasks "Ständiga" | Recurring todos (checked = strike-through) |
-| Gmail inbox | Max 5 unread, filtered (see below) |
-| Obsidian daily | `C:\Users\ximon\Hermes Vault\Daily\YYYY-MM-DD.md` |
-| `countdowns.json` | Manual long-term deadlines |
-| `two-todo-override.json` | If `date` matches today, use these todos |
+| Field | What it contains |
+|-------|-----------------|
+| `calendar` | Today's events with start/end times |
+| `tasks` | Open tasks with `due` (date) and `list` (which list) |
+| `standiga` | Tasks from the "Ständiga" list |
+| `mail` | Pre-filtered unread mail |
+| `countdowns` | Suggested countdowns from script |
+| `obsidian` | Today's Obsidian daily note content (or null) |
+| `mode` | "work" (05:00–16:30) or "home" |
+
+Obsidian daily note path: `C:\Users\ximon\Hermes Vault\YYYY-MM-DD.md`
 
 ## Two-todo rule
 
 Exactly two focus tasks. No more.
 
 - If `two-todo-override.json` has today's date → use it, don't override
-- Otherwise pick two based on: deadlines within 3 days → calendar prep → Obsidian priorities → starred tasks
-- Choose actionable tasks ("Write NP assessment draft, 45 min"), not vague ones ("Thesis")
+- Otherwise pick two based on: tasks with deadlines within 3 days → calendar prep → Obsidian priorities
+- **Only pick tasks that have a `due` date** — do not pick undated tasks
+- **Rewrite task titles** to be specific and actionable: "Write NP assessment draft, 45 min" not "NP"
 - If you can't find two good ones → set one, leave slot 2 as "Lägg till en till om du vill"
+
+## Calendar summary (calSummary)
+
+Look at today's events and write a `calSummary` — one or two sentences describing what the day actually means.
+
+Good: "Three lessons until lunch, then a meeting with the principal. The meeting is the critical one — prepare the agenda point about scheduling."
+Bad: "You have meetings at 08:00, 09:30, 10:15, and 13:00."
+
+- 1–2 simple events with no drama → set `calSummary` to `null` (list renders normally)
+- 3+ events, or day has a clear theme → write a summary
+- If one event clearly dominates → call it out explicitly
 
 ## Gmail filter
 
@@ -45,27 +60,33 @@ When unsure: include it.
 
 ## Countdowns
 
-Merge `countdowns.json` + starred Google Tasks with dates. Sort by proximity. Max 6 shown.
+Merge `countdowns.json` + tasks with `due` dates from raw.json. Sort by proximity. Max 6.
 
-- < 1 day: "6h 23m" (urgent/magenta)
-- < 3 days: "2d 4h" (urgent/magenta)
-- < 14 days: "12d" (normal)
-- Beyond: "24d" (dimmed)
+## curated.json format
+
+```json
+{
+  "date": "YYYY-MM-DD",
+  "todos": ["Rewritten todo 1", "Rewritten todo 2"],
+  "calSummary": "One or two sentences about the day. Null if 1-2 simple events.",
+  "countdowns": [{ "label": "...", "deadline": "ISO string" }],
+  "mail": [{ "from": "...", "subject": "...", "snippet": "...", "id": "..." }]
+}
+```
 
 ## HTML rules
 
 - All data statically baked in — no client-side API fetches
 - Only allowed JS: a self-updating clock + countdown timers
 - Keep `<meta name="robots" content="noindex, nofollow">` in `<head>`
-- Use `index-3.html` as visual reference for layout and color scheme
 
 ## After generating
 
 Tell Simon in 3–5 lines:
 - Which two todos you chose and why
-- Anything filtered that might be relevant
+- What you wrote in calSummary (if you wrote one)
+- Whether you rewrote any task titles
 - Any countdown now urgent (< 3 days)
-- Whether Obsidian daily was missing
 
 ## If data is unavailable
 
