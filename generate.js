@@ -13,7 +13,7 @@ const TOKEN_PATH = process.env.GOOGLE_TOKEN_PATH || '/home/ximon/.hermes/google_
 const OBSIDIAN_DAILY_PATHS = [
   process.env.OBSIDIAN_DAILY_PATH,
   '/mnt/c/Users/ximon/Hermes Vault',
-  '/mnt/c/Users/ximon/Hermes Vault/Daily',
+
 ].filter(Boolean);
 
 function startOfLocalDay(d = new Date()) {
