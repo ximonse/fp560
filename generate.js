@@ -363,7 +363,7 @@ function renderTodos(todos) {
   }).join('');
 }
 
-function buildHtml({ todos, countdowns, events, mail, standiga, curatedAt }) {
+function buildHtml({ todos, countdowns, events, mail, standiga, curatedAt, calSummary }) {
   const now = new Date();
   const dateStr = now.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
 
@@ -490,7 +490,7 @@ function buildHtml({ todos, countdowns, events, mail, standiga, curatedAt }) {
 
   <section class="calendar">
     <h2>Idag</h2>
-    ${renderEvents(events)}
+    ${calSummary ? `<p style="font-size:18px;line-height:1.6;color:var(--fg);">${esc(calSummary)}</p>` : renderEvents(events)}
   </section>
 
   <section class="mail">
@@ -641,11 +641,12 @@ async function main() {
     ? claudeCurated.countdowns.map(c => ({ label: c.label, deadline: new Date(c.deadline) }))
     : countdowns;
   const finalMail = claudeCurated?.mail || mail;
+  const calSummary = claudeCurated?.calSummary || null;
 
   const now = new Date();
   const curatedAt = now.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
 
-  const html = buildHtml({ todos, countdowns: finalCountdowns, events, mail: finalMail, standiga: standigaTasks, curatedAt });
+  const html = buildHtml({ todos, countdowns: finalCountdowns, events, mail: finalMail, standiga: standigaTasks, curatedAt, calSummary });
   writeFileSync(join(__dirname, 'index.html'), html, 'utf-8');
   console.log('index.html skriven.');
 
