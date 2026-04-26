@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { execSync } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -650,8 +650,40 @@ async function main() {
   writeFileSync(join(__dirname, 'index.html'), html, 'utf-8');
   console.log('index.html skriven.');
 
+  // V2 — killswitchat: try/catch isolerar fp560 v2 så att v1 alltid deployar
+  // även om v2-engine skulle krascha. Disciplinregel #5.
+  let v2Generated = false;
+  try {
+    const { buildV2Data } = await import('./lib/v2-engine.js');
+    const rawForV2 = {
+      date: localDateStr(),
+      mode,
+      calendar: calEvents.map(e => ({
+        title: e.summary,
+        start: e.start.dateTime || e.start.date,
+        end: e.end.dateTime || e.end.date,
+      })),
+      tasks: allTasks
+        .filter(t => t.status === 'needsAction' && !isGarbled(t.title))
+        .map(t => ({ title: t.title, due: t.due || null, list: t._list || null })),
+      standiga: standigaTasks.map(t => ({ title: t.title, done: t.status === 'completed' })),
+      mail: finalMail.map(e => ({ from: e.from, subject: e.subject, snippet: e.snippet || '', id: e.id })),
+      countdowns: finalCountdowns.map(c => ({ label: c.label, deadline: c.deadline.toISOString() })),
+      obsidian: obsidian || null,
+    };
+    const v2Data = buildV2Data(rawForV2, obsidian);
+    const v2Dir = join(__dirname, 'v2');
+    if (!existsSync(v2Dir)) mkdirSync(v2Dir);
+    writeFileSync(join(v2Dir, 'data.json'), JSON.stringify(v2Data, null, 2), 'utf-8');
+    console.log('v2/data.json skriven.');
+    v2Generated = true;
+  } catch (e) {
+    console.warn('v2 generation misslyckades, hoppar över:', e.message);
+  }
+
   const dateStamp = now.toISOString().slice(0, 16).replace('T', ' ');
-  execSync(`git -C "${__dirname}" add index.html`, { stdio: 'inherit' });
+  const filesToAdd = v2Generated ? 'index.html v2/' : 'index.html';
+  execSync(`git -C "${__dirname}" add ${filesToAdd}`, { stdio: 'inherit' });
   execSync(`git -C "${__dirname}" commit -m "Morgonsida ${dateStamp}"`, { stdio: 'inherit' });
   execSync(`git -C "${__dirname}" push`, { stdio: 'inherit' });
   console.log(`\nDone. Sidan deployar till https://ximonse.github.io/fp560/`);

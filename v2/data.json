@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "generatedAt": "2026-04-26T21:54:27.683Z",
+    "date": "2026-04-26",
+    "weekday": "söndag",
+    "weekend": false,
+    "currentDayPart": "natt"
+  },
+  "twoTodoOverride": [
+    {
+      "text": "Kom ihåg att jag ska klippa mig idag.",
+      "done": false
+    },
+    {
+      "text": "Ta promenad⏫",
+      "done": false
+    }
+  ],
+  "todayItems": [
+    {
+      "text": "Kom ihåg att jag ska klippa mig imorgon.",
+      "due": null,
+      "source": "daily-note",
+      "list": null
+    },
+    {
+      "text": "Reflektioner – Saker hänger ihop. Inget kommer ur ett vakuum. Om man lär sig observera (man kan observera yttre fysisk objekt och händelser/processer och inre tankar, känslor och upplevelser. \"Det är orättvist\"",
+      "due": "2026-04-26T00:00:00.000Z",
+      "source": "task",
+      "list": "My todos"
+    },
+    {
+      "text": "Carlos ska kolla på tomten. Sedan köra ut ett gäng. ",
+      "due": "2026-04-26T00:00:00.000Z",
+      "source": "task",
+      "list": "My todos"
+    },
+    {
+      "text": "Raka huvudet. ",
+      "due": "2026-04-26T00:00:00.000Z",
+      "source": "task",
+      "list": "My todos"
+    },
+    {
+      "text": "Ai assistent, ceta vad som är viktigt, var det är viktigt när det är viktigt och hur viktigt det är. ",
+      "due": "2026-04-25T00:00:00.000Z",
+      "source": "task",
+      "list": "My todos"
+    },
+    {
+      "text": "Week  – Reflektera · Kolla nästa vecka",
+      "due": "2026-04-26T00:00:00.000Z",
+      "source": "task",
+      "list": "Ribbaskolan"
+    }
+  ],
+  "todayEvents": [
+    {
+      "time": "heldag",
+      "title": "Förberedelse NP Matematik",
+      "isAllDay": true,
+      "startISO": "2026-04-20",
+      "endISO": "2026-05-04"
+    }
+  ],
+  "openLoops": [],
+  "weekAhead": [
+    {
+      "type": "task",
+      "date": "2026-04-27T00:00:00.000Z",
+      "title": "https://chatgpt.com/g/g-69edd2ab71bc8191b70cb767ebd53f63-lararoversattaren-ukrainska",
+      "list": "My todos"
+    },
+    {
+      "type": "task",
+      "date": "2026-04-28T00:00:00.000Z",
+      "title": "this is my students are going to write selling text for the project sensor Swedish in school",
+      "list": "Ribbaskolan"
+    }
+  ],
+  "nextWeekPrep": [],
+  "importantMail": [
+    {
+      "from": "PDF By Abdul Hafidz Zaid <updates@academia-mail.com>",
+      "subject": "📄 \"The Essence of Education in...\" by Abdul Hafidz Zaid",
+      "snippet": "Academia.edu Because you read John Dewey&#39;s Experience and Education, you might like this: The Essence of Education in the Perspective of John Dewey Paper Thumbnail Author Photo Abdul Hafidz Zaid"
+    },
+    {
+      "from": "Blocket <blocket@blocket.se>",
+      "subject": "Nya annonser: \"bortskänkes\", säljes i Jönköping",
+      "snippet": "Hej Simon Wallnor! Du har 7 nya träffar i sökningen: &quot;bortskänkes&quot;, säljes i Jönköping Chesterfield soffa 3-sits brun läder Nässjö Privat Byrå Tranås Privat Expedit Kallax hylla från Ikea"
+    },
+    {
+      "from": "Apple <no_reply@email.apple.com>",
+      "subject": "Your invoice from Apple.",
+      "snippet": "Invoice 25 April 2026 Sequence: 1-13472230021 Order ID: MVWTFB0SFS Document: 694124681769 Apple Account: zetterberg@ximon.se iCloud iCloud+ with 50 GB (Monthly) Renews 26 May 2026 Simons ipad 12,00 kr"
+    },
+    {
+      "from": "AliExpress <ae-best-care-market25@deals.aliexpress.com>",
+      "subject": "502 ordered this home item",
+      "snippet": "Discover your dream deals ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌ ‌"
+    },
+    {
+      "from": "ByteByteGo <bytebytego@substack.com>",
+      "subject": "EP212: Data Warehouse vs Data Lake vs Data Mesh",
+      "snippet": "Storing data is the easy part. Deciding where and how to organize it is the real challenge. ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏ ͏"
+    }
+  ],
+  "sleep": null,
+  "nowLines": [],
+  "reminder": null
+}
