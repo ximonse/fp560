@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generatedAt": "2026-04-26T22:25:25.804Z",
-    "date": "2026-04-27",
+    "generatedAt": "2026-05-11T04:06:14.598Z",
+    "date": "2026-05-11",
     "weekday": "måndag",
     "weekend": false,
     "currentDayPart": "morgon"
@@ -9,165 +9,143 @@
   "twoTodoOverride": [],
   "todayItems": [
     {
-      "text": "Klippa mig",
-      "due": null,
-      "source": "daily-note",
-      "list": null
-    },
-    {
-      "text": "Reflektioner – Saker hänger ihop. Inget kommer ur ett vakuum. Om man lär sig observera (man kan observera yttre fysisk objekt och händelser/processer och inre tankar, känslor och upplevelser. \"Det är orättvist\"",
-      "due": "2026-04-26T00:00:00.000Z",
+      "text": "Goal setting mål #Huberman  – Ta emot kritik och ifrågasättande som feedback. Kolla om det stämmer och om ändring är hjälpsamt och om jag kan ändra eller justera.  · Lifehacks \"Äga livet\" känslor på väggen i valens och styrka. Tankar-fysiska känslor-prediktion.  · Vid lyckande, singla slant om belöna sig själv.  · Krona = 30-60sek blunda och påminn dig om vikten av målet, om det var jobbigt eller lätt att genomföra dagens tid/aktiviteter för att nå målet och att du rör dig målet, +2 till",
+      "due": "2026-05-06T00:00:00.000Z",
       "source": "task",
       "list": "My todos"
     },
     {
-      "text": "https://chatgpt.com/g/g-69edd2ab71bc8191b70cb767ebd53f63-lararoversattaren-ukrainska",
-      "due": "2026-04-27T00:00:00.000Z",
+      "text": "Slippa undan..  - Ångest trötthet self sabotage sjökvskämt självförebråelse före andras attack. ",
+      "due": "2026-05-10T00:00:00.000Z",
       "source": "task",
       "list": "My todos"
     },
     {
-      "text": "Carlos ska kolla på tomten. Sedan köra ut ett gäng. ",
-      "due": "2026-04-26T00:00:00.000Z",
+      "text": "Gaps & space - Looking for the gaps and spaces between. Between stuff and outer limits. ",
+      "due": "2026-05-10T00:00:00.000Z",
       "source": "task",
       "list": "My todos"
     },
     {
-      "text": "Raka huvudet. ",
-      "due": "2026-04-26T00:00:00.000Z",
+      "text": "Fundera över extra föreläsningar, ämnen - Riktigt bra slides! Gör pratpunkter, sedan generera bilder för dessa.  · Försvarsmekanismer · Stress som stärker · Predictive mind",
+      "due": "2026-05-05T00:00:00.000Z",
       "source": "task",
       "list": "My todos"
     },
     {
-      "text": "Ai assistent, ceta vad som är viktigt, var det är viktigt när det är viktigt och hur viktigt det är. ",
-      "due": "2026-04-25T00:00:00.000Z",
+      "text": "Print bikupa - https://makerworld.com/en/models/1298070-apidea-feeder#profileId-1329857",
+      "due": "2026-05-03T00:00:00.000Z",
       "source": "task",
       "list": "My todos"
     },
     {
       "text": "Week  – Reflektera · Kolla nästa vecka",
-      "due": "2026-04-26T00:00:00.000Z",
+      "due": "2026-05-10T00:00:00.000Z",
       "source": "task",
       "list": "Ribbaskolan"
+    },
+    {
+      "text": "Testa innan skriva bok - Artifacts där man gör en enkel kunskapsläkoll först. ",
+      "due": "2026-05-04T00:00:00.000Z",
+      "source": "task",
+      "list": "Ribbaskolan"
+    },
+    {
+      "text": "this is my students are going to write selling text for the project sensor Swedish in school",
+      "due": "2026-04-28T00:00:00.000Z",
+      "source": "task",
+      "list": "Ribbaskolan"
+    },
+    {
+      "text": "Ring föräldrarna",
+      "due": "2026-05-07T00:00:00.000Z",
+      "source": "task",
+      "list": "Föräldrarna"
     }
   ],
   "todayEvents": [
     {
-      "time": "heldag",
-      "title": "Förberedelse NP Matematik",
-      "isAllDay": true,
-      "startISO": "2026-04-20",
-      "endISO": "2026-05-04"
-    },
-    {
       "time": "08:00",
       "title": "⭐ MA   6.1  Start",
       "isAllDay": false,
-      "startISO": "2026-04-27T08:00:00+02:00",
-      "endISO": "2026-04-27T08:45:00+02:00"
-    },
-    {
-      "time": "08:30",
-      "title": "RC TH",
-      "isAllDay": false,
-      "startISO": "2026-04-27T08:30:00+02:00",
-      "endISO": "2026-04-27T08:45:00+02:00"
+      "startISO": "2026-05-11T08:00:00+02:00",
+      "endISO": "2026-05-11T08:45:00+02:00"
     },
     {
       "time": "08:45",
       "title": "NO 6.1 1️⃣",
       "isAllDay": false,
-      "startISO": "2026-04-27T08:45:00+02:00",
-      "endISO": "2026-04-27T09:30:00+02:00"
+      "startISO": "2026-05-11T08:45:00+02:00",
+      "endISO": "2026-05-11T09:30:00+02:00"
     },
     {
       "time": "08:45",
       "title": "RC JB",
       "isAllDay": false,
-      "startISO": "2026-04-27T08:45:00+02:00",
-      "endISO": "2026-04-27T09:30:00+02:00"
+      "startISO": "2026-05-11T08:45:00+02:00",
+      "endISO": "2026-05-11T09:30:00+02:00"
     },
     {
       "time": "10:00",
       "title": "⭐ MA 6.2 Start",
       "isAllDay": false,
-      "startISO": "2026-04-27T10:00:00+02:00",
-      "endISO": "2026-04-27T10:45:00+02:00"
+      "startISO": "2026-05-11T10:00:00+02:00",
+      "endISO": "2026-05-11T10:45:00+02:00"
     },
     {
       "time": "10:45",
       "title": "NO 6.2 1️⃣",
       "isAllDay": false,
-      "startISO": "2026-04-27T10:45:00+02:00",
-      "endISO": "2026-04-27T11:30:00+02:00"
+      "startISO": "2026-05-11T10:45:00+02:00",
+      "endISO": "2026-05-11T11:30:00+02:00"
     },
     {
       "time": "11:30",
       "title": "Lunch",
       "isAllDay": false,
-      "startISO": "2026-04-27T11:30:00+02:00",
-      "endISO": "2026-04-27T11:50:00+02:00"
+      "startISO": "2026-05-11T11:30:00+02:00",
+      "endISO": "2026-05-11T11:50:00+02:00"
     },
     {
       "time": "13:00",
       "title": "Rastvakt",
       "isAllDay": false,
-      "startISO": "2026-04-27T13:00:00+02:00",
-      "endISO": "2026-04-27T13:30:00+02:00"
+      "startISO": "2026-05-11T13:00:00+02:00",
+      "endISO": "2026-05-11T13:30:00+02:00"
     },
     {
       "time": "13:30",
       "title": "MA 6.1 2️⃣ Långpass",
       "isAllDay": false,
-      "startISO": "2026-04-27T13:30:00+02:00",
-      "endISO": "2026-04-27T14:15:00+02:00"
+      "startISO": "2026-05-11T13:30:00+02:00",
+      "endISO": "2026-05-11T14:15:00+02:00"
     },
     {
       "time": "13:35",
       "title": "RC TH",
       "isAllDay": false,
-      "startISO": "2026-04-27T13:35:00+02:00",
-      "endISO": "2026-04-27T14:15:00+02:00"
+      "startISO": "2026-05-11T13:35:00+02:00",
+      "endISO": "2026-05-11T14:15:00+02:00"
     },
     {
       "time": "14:15",
       "title": "RC WH",
       "isAllDay": false,
-      "startISO": "2026-04-27T14:15:00+02:00",
-      "endISO": "2026-04-27T15:00:00+02:00"
+      "startISO": "2026-05-11T14:15:00+02:00",
+      "endISO": "2026-05-11T15:00:00+02:00"
     },
     {
       "time": "14:15",
       "title": "MA 6.1 2️⃣ Långpass",
       "isAllDay": false,
-      "startISO": "2026-04-27T14:15:00+02:00",
-      "endISO": "2026-04-27T15:00:00+02:00"
+      "startISO": "2026-05-11T14:15:00+02:00",
+      "endISO": "2026-05-11T15:00:00+02:00"
     }
   ],
   "openLoops": [],
-  "weekAhead": [
-    {
-      "type": "task",
-      "date": "2026-04-28T00:00:00.000Z",
-      "title": "this is my students are going to write selling text for the project sensor Swedish in school",
-      "list": "Ribbaskolan"
-    }
-  ],
+  "weekAhead": [],
   "nextWeekPrep": [],
-  "importantMail": [
-    {
-      "from": "wordpress@ximon.se",
-      "subject": "En säkerhetsrisk hittades på ximon.se",
-      "snippet": "Åtgärd krävs ... potentiell säkerhetsrisk i din WordPress installation på ximon.se",
-      "id": ""
-    },
-    {
-      "from": "\"Anthropic, PBC\" <invoice+statements@mail.anthropic.com>",
-      "subject": "Your receipt from Anthropic, PBC #2075-3651-7110",
-      "snippet": "Receipt/statement for Anthropic billing.",
-      "id": ""
-    }
-  ],
+  "importantMail": [],
   "sleep": null,
   "nowLines": [],
   "reminder": null
